@@ -1,0 +1,15 @@
+[Unit]
+Description=ffmpeg-mnctv Service
+After=network.target 
+
+[Service]
+Type=simple
+User=root
+
+ExecStart=/usr/local/bin/ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format vaapi -re -i http://192.168.88.253:9981/stream/service/35e594aea65c390468b01ca770c0a2c7?ticket=36E0862E4C1484FA9B9B1A1CFF55C182A7633EE8 -vf 'fps=30,scale_vaapi=w=768:h=432:format=nv12,deinterlace_vaapi' -c:v hevc_vaapi -b:v 640k -maxrate 768k -c:a aac -b:a 64k -f ssegment -segment_list /var/www/html/mnctv.m3u8 -segment_list_type hls -segment_list_size 10 -segment_list_flags +live -segment_time 10 -segment_wrap 30 /var/www/html/mnctv%01d.ts
+
+Restart=on-abort
+
+
+[Install]
+WantedBy=multi-user.target

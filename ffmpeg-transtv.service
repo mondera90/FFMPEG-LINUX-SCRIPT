@@ -1,0 +1,15 @@
+[Unit]
+Description=ffmpeg-transtv Service
+After=network.target 
+
+[Service]
+Type=simple
+User=root
+
+ExecStart=/usr/local/bin/ffmpeg -hwaccel vaapi -hwaccel_device /dev/dri/renderD128 -hwaccel_output_format vaapi -re -i http://192.168.88.253:9981/stream/service/f3cd39e3fb5570f305d89db1ea82d9aa?ticket=906535CE59DF3F5E75BF818B7E29016C0569D247 -vf 'fps=30,scale_vaapi=w=768:h=432:format=nv12,deinterlace_vaapi' -c:v hevc_vaapi -b:v 640k -maxrate 768k -c:a aac -b:a 64k -f ssegment -segment_list /var/www/html/transtv.m3u8 -segment_list_type hls -segment_list_size 10 -segment_list_flags +live -segment_time 10 -segment_wrap 30 /var/www/html/transtv%01d.ts
+
+Restart=on-abort
+
+
+[Install]
+WantedBy=multi-user.target
